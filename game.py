@@ -42,6 +42,9 @@ def evaluate_game(game):
     
     >>> evaluate_game("--|--|--|--|--|--|--|--|--|X||XX")
     30
+    
+    >>> evaluate_game("--|--|--|--|--|--|--|--|X|X||XX")
+    60
   
     >>> evaluate_game("--|--|--|--|--|--|--|--|--|X||X5")
     25
@@ -119,12 +122,7 @@ def evaluate_game(game):
     """
     score = 0
    
-    for (
-        throw_before_last_throw,
-        last_throw,
-        throw,
-    ) in iter_over_throws(game.split("|"), window_size=3):
-    
+    for (throw_before_last_throw, last_throw, throw) in iter_over_throws(game.split("|"), window_size=3):
         if throw.frame >= 11:
             score += throw.points
         else:
@@ -137,7 +135,6 @@ def evaluate_game(game):
     # if throw.strike:
     #     assert throw.frame == 12        
     # assert not throw.strike or throw.frame == 12
-    
     assert not (throw.strike and not throw.frame == 12)
     
     # if last_throw.strike:
@@ -150,7 +147,7 @@ def evaluate_game(game):
     
     # if throw.frame == 12 and last_throw.frame == 11:
     #     assert last_throw.spare
-    assert throw.frame != 12 or last_throw.frame != 11 or last_throw.spare
+    assert throw.frame != 12 or last_throw.frame != 10 or last_throw.spare
                
     return score
 
@@ -242,9 +239,7 @@ def evaluate_frame(number, frame):
     #     ...
     # Exception: Two Strikes/Spares can't be in the same frame!
     """
-     
-    if frame == 'XX' and number < 11:
-        raise Exception("Can't have two strikes before bonus frame!")
+    assert frame != 'XX' or number > 11
     
     if number == 11:
         assert frame == ''
@@ -267,12 +262,11 @@ def evaluate_frame(number, frame):
             
         elif hit == '/' and idx == 1:
             yield Throw(frame=number, strike=False, spare=True, points=10 - points)
-            
-        elif hit == '/' and idx == 0:
-            raise Exception("Spare '/' can't be in first place.")
         
         elif number == 12 and hit == 'X':
             yield Throw(frame=number, strike=False, spare=False, points=10)
+            
+        assert idx != 0 or hit != '/'
     
     assert len(frame) == 2 or number > 11
 
