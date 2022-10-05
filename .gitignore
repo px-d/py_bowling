@@ -1,3 +1,8 @@
 /.DS_Store
 /.pytest_cache
 /.vscode
+/.VSCodeCounter
+/.idea
+.coverage
+__pycache__/bowling.cpython-310.pyc
+/Bowling.pptx
